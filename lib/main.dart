@@ -102,16 +102,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       selectableDayPredicate: (date) => date.weekday != 7,
                       locale: 'de',
                     ),
-                    Expanded(
-                        child: ListView.builder(
-                      itemCount: snapshot.data!
-                          .getVorlesungformDate(_selectedDate)
-                          .length,
-                      itemBuilder: (context, index) {
-                        return veranstaltungsWidget(snapshot.data!
-                            .getVorlesungformDate(_selectedDate)[index]);
+                    
+                    GestureDetector(
+                      onHorizontalDragEnd:(details) {
+                        if(details.velocity>0
+                        ){_selectedDate.add(Duration(days: 1));}
                       },
-                    ))
+                      child: Expanded(
+                          child: ListView.builder(
+                        itemCount: snapshot.data!
+                            .getVorlesungformDate(_selectedDate)
+                            .length,
+                        itemBuilder: (context, index) {
+                          return veranstaltungsWidget(snapshot.data!
+                              .getVorlesungformDate(_selectedDate)[index]);
+                        },
+                      )),
+                    )
                   ],
                 );
               } else if (snapshot.hasError) {
@@ -137,7 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Divider(),
             Text(v.Raum),
             Divider(),
-            Text(v.Beschreibung)
+            Text(v.Beschreibung),
+            SizedBox(height: 10,)
           ],
         ),
       ),
