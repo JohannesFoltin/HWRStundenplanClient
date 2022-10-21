@@ -103,22 +103,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       locale: 'de',
                     ),
                     
-                    GestureDetector(
-                      onHorizontalDragEnd:(details) {
-                        if(details.velocity>0
-                        ){_selectedDate.add(Duration(days: 1));}
+                    Expanded(
+                        child: ListView.builder(
+                      itemCount: snapshot.data!
+                          .getVorlesungformDate(_selectedDate)
+                          .length,
+                      itemBuilder: (context, index) {
+                        return veranstaltungsWidget(snapshot.data!
+                            .getVorlesungformDate(_selectedDate)[index]);
                       },
-                      child: Expanded(
-                          child: ListView.builder(
-                        itemCount: snapshot.data!
-                            .getVorlesungformDate(_selectedDate)
-                            .length,
-                        itemBuilder: (context, index) {
-                          return veranstaltungsWidget(snapshot.data!
-                              .getVorlesungformDate(_selectedDate)[index]);
-                        },
-                      )),
-                    )
+                    ))
                   ],
                 );
               } else if (snapshot.hasError) {
