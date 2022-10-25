@@ -84,22 +84,24 @@ class _MyHomePageState extends State<MyHomePage> {
                 print(snapshot.data!.Vorlesungen.length);
                 return Column(
                   children: [
-                    CalendarTimeline(
-                      initialDate: _selectedDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365 * 4)),
-                      onDateSelected: (date) =>
-                          setState(() => _selectedDate = date),
-                      leftMargin: 20,
-                      monthColor: Colors.black,
-                      dayColor: Colors.teal[200],
-                      activeDayColor: Colors.red,
-                      activeBackgroundDayColor: Colors.redAccent[100],
-                      dotsColor: Color(0xFF333A47),
-                      selectableDayPredicate: (date) => date.weekday != 7,
-                      locale: 'de',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(onPressed: () {
+                           _selectedDate = _selectedDate.subtract(Duration(days: 1)); 
+                         setState(() {
+                         });
+                        }, icon: Icon(Icons.arrow_left)),
+                        TextButton(onPressed: () {
+                          
+                        }, child: Text(_selectedDate.weekday.toString())),
+                        IconButton(onPressed: () {
+                           _selectedDate = _selectedDate.add(Duration(days: 1));
+                         setState(() {
+                         });
+                        }, icon: Icon(Icons.arrow_right))
+                      ],
                     ),
-                    
                     Expanded(
                         child: ListView.builder(
                       itemCount: snapshot.data!
@@ -118,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return Center(child: const CircularProgressIndicator());
             }));
   }
+
 
   Widget veranstaltungsWidget(Vorlesung v) {
     return Container(
