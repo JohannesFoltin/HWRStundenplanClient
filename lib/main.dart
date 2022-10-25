@@ -46,10 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
     futurePlan = fetchPlan();
   }
 
-  void requestUpdate() {
-    http.post(Uri.parse('http://192.168.178.33:4545/plan'));
-  }
-
   Future<Plan> fetchPlan() async {
     final response =
         await http.get(Uri.parse('http://192.168.178.33:4545/plan'));
@@ -74,8 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
                 onPressed: () => {
                       setState(() {
-                        requestUpdate();
-                        futurePlan = fetchPlan();
+                       // requestUpdate();
+                       fetchPlan();
                       })
                     },
                 icon: Icon(Icons.refresh))
@@ -85,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
             future: futurePlan,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                print(snapshot.data!.Vorlesungen.length);
                 return Column(
                   children: [
                     CalendarTimeline(
@@ -118,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
-              return const CircularProgressIndicator();
+              return Center(child: const CircularProgressIndicator());
             }));
   }
 
@@ -126,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Card(
+        elevation: 10,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
