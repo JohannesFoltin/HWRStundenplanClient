@@ -4,9 +4,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:stundenplan/Struct/plan.dart';
 import 'package:stundenplan/Struct/vorlesung.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,6 +15,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('de');
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -70,8 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
                 onPressed: () => {
                       setState(() {
-                       // requestUpdate();
-                       fetchPlan();
+                        // requestUpdate();
+                        futurePlan = fetchPlan();
                       })
                     },
                 icon: Icon(Icons.refresh))
@@ -87,19 +90,24 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(onPressed: () {
-                           _selectedDate = _selectedDate.subtract(Duration(days: 1)); 
-                         setState(() {
-                         });
-                        }, icon: Icon(Icons.arrow_left)),
-                        TextButton(onPressed: () {
-                          
-                        }, child: Text(_selectedDate.weekday.toString())),
-                        IconButton(onPressed: () {
-                           _selectedDate = _selectedDate.add(Duration(days: 1));
-                         setState(() {
-                         });
-                        }, icon: Icon(Icons.arrow_right))
+                        IconButton(
+                            onPressed: () {
+                              _selectedDate =
+                                  _selectedDate.subtract(Duration(days: 1));
+                              setState(() {});
+                            },
+                            icon: Icon(Icons.arrow_left)),
+                        TextButton(
+                            onPressed: () {},
+                            child:
+                                Text(DateFormat.EEEE('de').format(_selectedDate))),
+                        IconButton(
+                            onPressed: () {
+                              _selectedDate =
+                                  _selectedDate.add(Duration(days: 1));
+                              setState(() {});
+                            },
+                            icon: Icon(Icons.arrow_right))
                       ],
                     ),
                     Expanded(
@@ -121,7 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
             }));
   }
 
-
   Widget veranstaltungsWidget(Vorlesung v) {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -140,7 +147,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(v.Raum),
             Divider(),
             Text(v.Beschreibung),
-            SizedBox(height: 10,)
+            SizedBox(
+              height: 10,
+            )
           ],
         ),
       ),
