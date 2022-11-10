@@ -2,8 +2,6 @@
 
 import 'dart:convert';
 import 'dart:async';
-import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _selectedDate = DateTime.now();
-    futurePlan = _loadPlanFormOnline();
+    futurePlan = _loadPlanFromLocal();
   }
 
   void _showSnackBar(String text) {
@@ -63,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   var key = "SAVE";
+  var client = http.Client();
 
   Future<Plan> _loadPlanFromLocal() async {
     final prefs = await SharedPreferences.getInstance();
@@ -76,21 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Plan> _loadPlanFormOnline() async {
-    try {
-      final response =
-          await http.get(Uri.parse('http://192.168.178.33:4545/plan'));
+      http.Response response = await client.get(Uri.parse('http://192.168.178.33:4545/plan'));
       if (response.statusCode == 200) {
-        _showSnackBar("Erfolgreich aus dem Internet geladen");
+        _showSnackBar("Online");
         final prefs = await SharedPreferences.getInstance();
         prefs.setString(key, response.body);
         return Plan.fromJson(jsonDecode(response.body));
       } else {
         return Future<Plan>.error("Server antwortet komisch");
       }
-    } catch (error) {
-      _showSnackBar("Server nicht erreicht. Versuche es aus dem Speicher");
-      return _loadPlanFromLocal();   
-      }
+  
 
   }
 
@@ -111,7 +105,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _pullRefresh() async {
     setState(() {
-      futurePlan = _loadPlanFormOnline();
+      try{
+        futurePlan = _loadPlanFormOnline();
+      }catch(_){
+        print("halsdjlkdsadjsalkjad");
+      }
     });
   }
 
@@ -134,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           title: TextButton(
             child: Text(
-              DateFormat.EEEE('de').format(_selectedDate),
+              "${DateFormat.EEEE("de").format(_selectedDate)} ${DateFormat("dd.MM.yyyy").format(_selectedDate)}",
               style: TextStyle(color: Colors.white, fontSize: 22),
             ),
             onPressed: () => _selectDate(context),
@@ -215,11 +213,11 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 10,
             ),
             Text(
-                "Zeit: ${v.startZeit().hour}:${v.startZeit().minute} - ${v.endZeit().hour}:${v.endZeit().minute}"),
+                "Zeit: ${DateFormat("HH:mm").format(v.startZeit())} - ${DateFormat("HH:mm").format(v.endZeit())}"),
             Divider(),
             Text(v.Raum),
             Divider(),
-            Text(v.Beschreibung),
+            Text(v.Beschreibung,textAlign: TextAlign.center),
             SizedBox(
               height: 10,
             )
