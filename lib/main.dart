@@ -33,7 +33,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -47,11 +46,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _selectedDate = DateTime.now();
     futurePlan = _loadPlanFromLocal();
+
   }
 
   void _showSnackBar(String text) {
-    var snackBar =
-        SnackBar(duration: Duration(seconds: 1), content: Row(
+    var snackBar = SnackBar(
+        duration: Duration(seconds: 1),
+        content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(text),
@@ -61,7 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   var key = "SAVE";
-  var client = http.Client();
 
   Future<Plan> _loadPlanFromLocal() async {
     final prefs = await SharedPreferences.getInstance();
@@ -70,22 +70,26 @@ class _MyHomePageState extends State<MyHomePage> {
       return Plan.fromJson(jsonDecode(prefs.getString(key) ?? ""));
     } catch (error) {
       _showSnackBar("Keine Daten lokal vorhanden");
-      return Future<Plan>.error("Keine Daten lokal vorhanden");
+      return Future<Plan>.error("Keine Daten lokal vorhanden. Versuche eine Verbindung zum Server herzustellen und dann zu aktualisieren");
     }
   }
 
   Future<Plan> _loadPlanFormOnline() async {
-      http.Response response = await client.get(Uri.parse('http://192.168.178.33:4545/plan'));
-      if (response.statusCode == 200) {
-        _showSnackBar("Online");
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setString(key, response.body);
-        return Plan.fromJson(jsonDecode(response.body));
-      } else {
-        return Future<Plan>.error("Server antwortet komisch");
-      }
-  
-
+    http.Response response;
+    try {
+      response = await http.get(Uri.parse('http://192.168.178.33:4545/plan'));
+    }catch (_){
+      _showSnackBar("Server nicht erreicht. Lade offline");
+      return Future<Plan>.error("Server nicht erreicht");
+    }
+    if (response.statusCode == 200) {
+      _showSnackBar("Online");
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString(key, response.body);
+      return Plan.fromJson(jsonDecode(response.body));
+    } else {
+      return Future<Plan>.error("Server antwortet komisch");
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -105,11 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _pullRefresh() async {
     setState(() {
-      try{
-        futurePlan = _loadPlanFormOnline();
-      }catch(_){
-        print("halsdjlkdsadjsalkjad");
-      }
+      futurePlan = _loadPlanFormOnline()
+          .onError((error, stackTrace) => _loadPlanFromLocal());
     });
   }
 
@@ -164,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             setState(() {});
                           }
                         },
-                        child: ListView.builder(
+                                                child: ListView.builder(
                           itemCount: snapshot.data!
                               .getVorlesungformDate(_selectedDate)
                               .length,
@@ -173,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 .getVorlesungformDate(_selectedDate)[index]);
                           },
                         ),
-                      ))
+                        ))
                     ],
                   ),
                 );
@@ -217,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Divider(),
             Text(v.Raum),
             Divider(),
-            Text(v.Beschreibung,textAlign: TextAlign.center),
+            Text(v.Beschreibung, textAlign: TextAlign.center),
             SizedBox(
               height: 10,
             )
