@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +11,7 @@ import 'package:stundenplan/Struct/plan.dart';
 import 'package:stundenplan/Struct/vorlesung.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:stundenplan/dayview.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,7 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _selectedDate = DateTime.now();
     futurePlan = _loadPlanFromLocal();
-
   }
 
   void _showSnackBar(String text) {
@@ -70,7 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
       return Plan.fromJson(jsonDecode(prefs.getString(key) ?? ""));
     } catch (error) {
       _showSnackBar("Keine Daten lokal vorhanden");
-      return Future<Plan>.error("Keine Daten lokal vorhanden. Versuche eine Verbindung zum Server herzustellen und dann zu aktualisieren");
+      return Future<Plan>.error(
+          "Keine Daten lokal vorhanden. Versuche eine Verbindung zum Server herzustellen und dann zu aktualisieren");
     }
   }
 
@@ -78,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
     http.Response response;
     try {
       response = await http.get(Uri.parse('http://192.168.178.33:4545/plan'));
-    }catch (_){
+    } catch (_) {
       _showSnackBar("Server nicht erreicht. Lade offline");
       return Future<Plan>.error("Server nicht erreicht");
     }
@@ -117,28 +119,35 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('de');
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          leading: TextButton(
-            onPressed: () {
-              setState(() {
-                _selectedDate = DateTime.now();
-              });
-            },
-            child: Text(
-              "Heute",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          title: TextButton(
-            child: Text(
-              "${DateFormat.EEEE("de").format(_selectedDate)} ${DateFormat("dd.MM.yyyy").format(_selectedDate)}",
-              style: TextStyle(color: Colors.white, fontSize: 22),
-            ),
-            onPressed: () => _selectDate(context),
-          ),
+    var appBaar = AppBar(
+      centerTitle: true,
+      leading: TextButton(
+        onPressed: () {
+          setState(() {
+            _selectedDate = DateTime.now();
+          });
+        },
+        child: Text(
+          "Heute",
+          style: TextStyle(color: Colors.white),
         ),
+      ),
+      title: TextButton(
+        child: Text(
+          "${DateFormat.EEEE("de").format(_selectedDate)} ${DateFormat("dd.MM.yyyy").format(_selectedDate)}",
+          style: TextStyle(color: Colors.white, fontSize: 22),
+        ),
+        onPressed: () => _selectDate(context),
+      ),
+    );
+
+    double heightBar = appBaar.preferredSize.height;
+    final double height = MediaQuery.of(context).size.height -
+        heightBar -
+        MediaQuery.of(context).padding.top;
+
+    return Scaffold(
+        appBar: appBaar,
         body: FutureBuilder<Plan>(
             future: futurePlan,
             builder: (context, snapshot) {
@@ -165,16 +174,20 @@ class _MyHomePageState extends State<MyHomePage> {
                             setState(() {});
                           }
                         },
-                                                child: ListView.builder(
-                          itemCount: snapshot.data!
-                              .getVorlesungformDate(_selectedDate)
-                              .length,
-                          itemBuilder: (context, index) {
-                            return veranstaltungsWidget(snapshot.data!
-                                .getVorlesungformDate(_selectedDate)[index]);
-                          },
-                        ),
-                        ))
+                        child: SingleChildScrollView(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Center(child: Text("-- 08:00 --")),
+                                DayView(
+                                        vorlesungen: snapshot.data!
+                                            .getVorlesungformDate(_selectedDate),
+                                        screenheight: height)
+                                    .build(context),
+                              ],
+                            )),
+                      ))
                     ],
                   ),
                 );
@@ -199,6 +212,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 onRefresh: () => _pullRefresh(),
               );
             }));
+  }
+
+  ListView asd(AsyncSnapshot<Plan> snapshot) {
+    return ListView.builder(
+      itemCount: snapshot.data!.getVorlesungformDate(_selectedDate).length,
+      itemBuilder: (context, index) {
+        return veranstaltungsWidget(
+            snapshot.data!.getVorlesungformDate(_selectedDate)[index]);
+      },
+    );
   }
 
   Widget veranstaltungsWidget(Vorlesung v) {
