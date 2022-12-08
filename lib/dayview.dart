@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stundenplan/Struct/vorlesung.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 
 class DayView extends StatelessWidget {
   const DayView(
