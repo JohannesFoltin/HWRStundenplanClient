@@ -108,30 +108,25 @@ class DayView extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Card(
         elevation: 10,
-        child: SingleChildScrollView(
-          child: Container(
-            height: h+1,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                    "Zeit: ${DateFormat("HH:mm").format(v.startZeit())} - ${DateFormat("HH:mm").format(v.endZeit())}"),
-                const Divider(),
-                Text("Dauer: ${_minToHHMM(v.endZeit().difference(v.startZeit()).inMinutes)}"),
-                const Divider(),
-                Text(v.Raum),
-                const Divider(),
-                Text(v.Beschreibung, textAlign: TextAlign.center),
-                const SizedBox(
-                  height: 10,
-                )
-              ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const SizedBox(
+              height: 10,
             ),
-          ),
+            Text(
+                "Zeit: ${DateFormat("HH:mm").format(v.startZeit())} - ${DateFormat("HH:mm").format(v.endZeit())}",),
+            const Divider(),
+            Text("Dauer: ${_minToHHMM(v.endZeit().difference(v.startZeit()).inMinutes)}",),
+            const Divider(),
+            Text(v.Raum),
+            const Divider(),
+            Text(v.Beschreibung, textAlign: TextAlign.center),
+            const SizedBox(
+              height: 10,
+            )
+          ],
         ),
       ),
     );
