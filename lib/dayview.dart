@@ -21,7 +21,7 @@ class DayView extends StatelessWidget {
 
   List<Widget> _parseVorlesungen() {
     if (vorlesungen.isEmpty) {
-      List<Widget> tmp = [Container(height:screenheight,child: Center(child: Text("Keine Vorlesungen!")))];
+      List<Widget> tmp = [SizedBox(height:screenheight,child: Center(child: Text("Keine Vorlesungen!")))];
       return tmp;
     }
     List<Widget> retWidgets = [];
@@ -104,26 +104,25 @@ class DayView extends StatelessWidget {
   Widget _veranstaltungsWidget(Vorlesung v,double h) {
     return Container(
       height: h,
+      width: double.infinity,
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Card(
         elevation: 10,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             const SizedBox(
-              height: 10,
+              height: 5,
             ),
             Text(
                 "Zeit: ${DateFormat("HH:mm").format(v.startZeit())} - ${DateFormat("HH:mm").format(v.endZeit())}",),
             const Divider(),
-            Text("Dauer: ${_minToHHMM(v.endZeit().difference(v.startZeit()).inMinutes)}",),
-            const Divider(),
-            Text(v.Raum),
+            Text("Dauer: ${_minToHHMM(v.endZeit().difference(v.startZeit()).inMinutes)} \\ Raum: ${v.Raum}",),
             const Divider(),
             Text(v.Beschreibung, textAlign: TextAlign.center),
             const SizedBox(
-              height: 10,
+              height: 5,
             )
           ],
         ),
