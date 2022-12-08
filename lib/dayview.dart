@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stundenplan/Struct/vorlesung.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class DayView extends StatelessWidget {
   const DayView(
@@ -15,11 +16,11 @@ class DayView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: parseVorlesungen(),
+      children: _parseVorlesungen(),
     );
   }
 
-  List<Widget> parseVorlesungen() {
+  List<Widget> _parseVorlesungen() {
     if (vorlesungen.isEmpty) {
       List<Widget> tmp = [Container(height:screenheight,child: Center(child: Text("Keine Vorlesungen!")))];
       return tmp;
@@ -44,7 +45,7 @@ class DayView extends StatelessWidget {
     }
     Vorlesung v = vorlesungen.first;
     var h = v.endZeit().difference(v.startZeit()).inMinutes*ratio;
-    retWidgets.add(veranstaltungsWidget(v,h));
+    retWidgets.add(_veranstaltungsWidget(v,h));
 
 
     for (var i = 0; i < vorlesungen.length - 1; i++) {
@@ -56,14 +57,16 @@ class DayView extends StatelessWidget {
       if (minZwischenVorlesungen>0) {
       Container block = Container(
         height: minZwischenVorlesungen * ratio,
-        child: const Center(child: Text("Pause:")),
+        child:  Center(child: Text(
+          "Pause: ${_minToHHMM(minZwischenVorlesungen)}"
+        )),
       );
 
       retWidgets.add(block);
         
       }
       double heightVonVeranstaltung = vorlesungen[i+1].endZeit().difference(vorlesungen[i+1].startZeit()).inMinutes*ratio;
-      retWidgets.add(veranstaltungsWidget(vorlesungen[i + 1],heightVonVeranstaltung));
+      retWidgets.add(_veranstaltungsWidget(vorlesungen[i + 1],heightVonVeranstaltung));
     }
 
     DateTime letzteVorlesungEnde = vorlesungen.last.endZeit();
@@ -88,29 +91,47 @@ class DayView extends StatelessWidget {
     return retWidgets;
   }
 
-  Widget veranstaltungsWidget(Vorlesung v,double h) {
+  String _minToHHMM(int min){
+    if (min <60) {
+      return "${min}min";
+    }else{
+      var d = Duration(minutes:min);
+    List<String> parts = d.toString().split(':');
+    return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+    }
+
+  }
+
+  Widget _veranstaltungsWidget(Vorlesung v,double h) {
     return Container(
       height: h,
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Card(
         elevation: 10,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 10,
+        child: SingleChildScrollView(
+          child: Container(
+            height: h+1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                    "Zeit: ${DateFormat("HH:mm").format(v.startZeit())} - ${DateFormat("HH:mm").format(v.endZeit())}"),
+                const Divider(),
+                Text("Dauer: ${_minToHHMM(v.endZeit().difference(v.startZeit()).inMinutes)}"),
+                const Divider(),
+                Text(v.Raum),
+                const Divider(),
+                Text(v.Beschreibung, textAlign: TextAlign.center),
+                const SizedBox(
+                  height: 10,
+                )
+              ],
             ),
-            Text(
-                "Zeit: ${DateFormat("HH:mm").format(v.startZeit())} - ${DateFormat("HH:mm").format(v.endZeit())}"),
-            const Divider(),
-            Text(v.Raum),
-            const Divider(),
-            Text(v.Beschreibung, textAlign: TextAlign.center),
-            const SizedBox(
-              height: 10,
-            )
-          ],
+          ),
         ),
       ),
     );

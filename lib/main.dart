@@ -179,10 +179,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Center(child: Text("-- 08:00 --")),
                                 DayView(
                                         vorlesungen: snapshot.data!
-                                            .getVorlesungformDate(_selectedDate),
+                                            .getVorlesungformDate(
+                                                _selectedDate),
                                         screenheight: height)
                                     .build(context),
                               ],
@@ -212,42 +212,5 @@ class _MyHomePageState extends State<MyHomePage> {
                 onRefresh: () => _pullRefresh(),
               );
             }));
-  }
-
-  ListView asd(AsyncSnapshot<Plan> snapshot) {
-    return ListView.builder(
-      itemCount: snapshot.data!.getVorlesungformDate(_selectedDate).length,
-      itemBuilder: (context, index) {
-        return veranstaltungsWidget(
-            snapshot.data!.getVorlesungformDate(_selectedDate)[index]);
-      },
-    );
-  }
-
-  Widget veranstaltungsWidget(Vorlesung v) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-      child: Card(
-        elevation: 10,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-                "Zeit: ${DateFormat("HH:mm").format(v.startZeit())} - ${DateFormat("HH:mm").format(v.endZeit())}"),
-            Divider(),
-            Text(v.Raum),
-            Divider(),
-            Text(v.Beschreibung, textAlign: TextAlign.center),
-            SizedBox(
-              height: 10,
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

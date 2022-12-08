@@ -41,6 +41,7 @@ dependencies:
   intl: ^0.17.0
   shared_preferences: ^2.0.15
   calendar_view: ^1.0.0
+  auto_size_text: ^3.0.0
 
 
 
