@@ -2,13 +2,11 @@
 
 import 'dart:convert';
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stundenplan/Struct/plan.dart';
-import 'package:stundenplan/Struct/vorlesung.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:stundenplan/dayview.dart';
@@ -120,24 +118,36 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     initializeDateFormatting('de');
     var appBaar = AppBar(
-      centerTitle: true,
-      leading: TextButton(
-        onPressed: () {
-          setState(() {
-            _selectedDate = DateTime.now();
-          });
-        },
-        child: Text(
-          "Heute",
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-      title: TextButton(
-        child: Text(
-          "${DateFormat.EEEE("de").format(_selectedDate)} ${DateFormat("dd.MM.yyyy").format(_selectedDate)}",
-          style: TextStyle(color: Colors.white, fontSize: 22),
-        ),
-        onPressed: () => _selectDate(context),
+      backgroundColor: Colors.grey.shade100,
+      elevation: 0,
+      centerTitle: false,
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          TextButton(
+            style: ButtonStyle(alignment: Alignment.bottomCenter),
+            onPressed: () {
+              setState(() {
+                _selectedDate = DateTime.now();
+              });
+            },
+            child: Text(
+              "Heute",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+          const SizedBox(
+            width: 16,
+          ),
+          TextButton(
+            child: Text(
+              "${DateFormat.EEEE("de").format(_selectedDate)} ${DateFormat("dd.MM.yyyy").format(_selectedDate)}",
+              style: TextStyle(color: Colors.black, fontSize: 22),
+            ),
+            onPressed: () => _selectDate(context),
+          ),
+        ],
       ),
     );
 
