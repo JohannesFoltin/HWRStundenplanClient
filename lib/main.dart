@@ -120,34 +120,23 @@ class _MyHomePageState extends State<MyHomePage> {
     var appBaar = AppBar(
       backgroundColor: Colors.grey.shade100,
       elevation: 0,
-      centerTitle: false,
-      title: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          TextButton(
-            style: ButtonStyle(alignment: Alignment.bottomCenter),
-            onPressed: () {
-              setState(() {
-                _selectedDate = DateTime.now();
-              });
-            },
-            child: Text(
-              "Heute",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          TextButton(
-            child: Text(
-              "${DateFormat.EEEE("de").format(_selectedDate)} ${DateFormat("dd.MM.yyyy").format(_selectedDate)}",
-              style: TextStyle(color: Colors.black, fontSize: 22),
-            ),
-            onPressed: () => _selectDate(context),
-          ),
-        ],
+      centerTitle: true,
+      leading: IconButton(
+          onPressed: () {
+            setState(() {
+              _selectedDate = DateTime.now();
+            });
+          },
+          icon: Icon(
+            Icons.today,
+            color: Colors.black,
+          )),
+      title: TextButton(
+        child: Text(
+          "${DateFormat.EEEE("de").format(_selectedDate)} ${DateFormat("dd.MM.yyyy").format(_selectedDate)}",
+          style: TextStyle(color: Colors.black, fontSize: 22),
+        ),
+        onPressed: () => _selectDate(context),
       ),
     );
 
