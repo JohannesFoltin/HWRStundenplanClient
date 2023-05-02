@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:stundenplan/Struct/vorlesung.dart';
 
 class DayView extends StatelessWidget {
@@ -148,9 +149,21 @@ class DayView extends StatelessWidget {
                 ),
                 Container(
                   padding: const EdgeInsets.only(left: 12, top: 4),
-                  child: Text(
-                    v.Raum,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade800),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        v.Raum,
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade800),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        "Von ${DateFormat("HH:mm").format(v.startZeit())} bis ${DateFormat("HH:mm").format(v.endZeit())}",
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade800),
+                      ),
+                    ],
                   ),
                 ),
               ],
